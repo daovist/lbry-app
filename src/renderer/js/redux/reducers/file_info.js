@@ -1,157 +1,163 @@
+//@flow
+
 import * as types from "constants/action_types";
-import lbryuri from "lbryuri";
+import type { Action } from "types/Action";
+import type { FileInfo } from "types/FileInfo";
+import { handleActions } from "util/redux-actions";
 
-const reducers = {};
-const defaultState = {};
+type FileInfoSdHashMap = { [string]: FileInfo };
 
-reducers[types.FILE_LIST_STARTED] = function(state, action) {
-  return Object.assign({}, state, {
-    isFetchingFileList: true,
-  });
+type StateFileInfo = {
+  +bySdHash: FileInfoSdHashMap,
+  +downloadingBySdHash: { [string]: boolean },
+  +fetching: { [string]: boolean },
+  +isFetchingFileList: boolean,
+  +pendingBySdHash: FileInfoSdHashMap,
+  +urisLoading: { [string]: boolean },
 };
 
-reducers[types.FILE_LIST_SUCCEEDED] = function(state, action) {
-  const { fileInfos } = action.data;
-  const newBySdHash = Object.assign({}, state.bySdHash);
-  const pendingBySdHash = Object.assign({}, state.pendingBySdHash);
-
-  fileInfos.forEach(fileInfo => {
-    const { sd_hash } = fileInfo;
-
-    if (sd_hash) newBySdHash[fileInfo.sd_hash] = fileInfo;
-  });
-
-  return Object.assign({}, state, {
-    isFetchingFileList: false,
-    bySdHash: newBySdHash,
-    pendingBySdHash,
-  });
+const defaultState: StateFileInfo = {
+  bySdHash: {},
+  downloadingBySdHash: {},
+  fetching: {},
+  isFetchingFileList: false,
+  pendingBySdHash: {},
+  urisLoading: {},
 };
 
-reducers[types.FETCH_FILE_INFO_STARTED] = function(state, action) {
-  const { sd_hash } = action.data;
-  const newFetching = Object.assign({}, state.fetching);
+export default handleActions(
+  {
+    [types.FILE_LIST_STARTED]: (state: StateFileInfo, action: Action) => ({
+      isFetchingFileList: true,
+    }),
 
-  newFetching[sd_hash] = true;
+    [types.FILE_LIST_SUCCEEDED]: (state: StateFileInfo, action: Action) => {
+      const { fileInfos } = action.data;
+      const newBySdHash = Object.assign({}, state.bySdHash);
 
-  return Object.assign({}, state, {
-    fetching: newFetching,
-  });
-};
+      fileInfos.forEach(fileInfo => {
+        const { sd_hash } = fileInfo;
 
-reducers[types.FETCH_FILE_INFO_COMPLETED] = function(state, action) {
-  const { fileInfo, sd_hash } = action.data;
+        if (sd_hash) newBySdHash[fileInfo.sd_hash] = fileInfo;
+      });
 
-  const newBySdHash = Object.assign({}, state.bySdHash);
-  const newFetching = Object.assign({}, state.fetching);
+      return {
+        isFetchingFileList: false,
+        bySdHash: newBySdHash,
+      };
+    },
 
-  newBySdHash[sd_hash] = fileInfo;
-  delete newFetching[sd_hash];
+    [types.FETCH_FILE_INFO_STARTED]: (state: StateFileInfo, action: Action) => {
+      const { sd_hash } = action.data;
+      const newFetching = Object.assign({}, state.fetching);
 
-  return Object.assign({}, state, {
-    bySdHash: newBySdHash,
-    fetching: newFetching,
-  });
-};
+      newFetching[sd_hash] = true;
 
-reducers[types.DOWNLOADING_STARTED] = function(state, action) {
-  const { uri, sd_hash, fileInfo } = action.data;
+      return {
+        fetching: newFetching,
+      };
+    },
 
-  const newBySdHash = Object.assign({}, state.bySdHash);
-  const newDownloading = Object.assign({}, state.downloadingBySdHash);
-  const newLoading = Object.assign({}, state.urisLoading);
+    [types.FETCH_FILE_INFO_COMPLETED]: (
+      state: StateFileInfo,
+      action: Action
+    ) => {
+      const { fileInfo, sd_hash } = action.data;
 
-  newDownloading[sd_hash] = true;
-  newBySdHash[sd_hash] = fileInfo;
-  delete newLoading[uri];
+      const newBySdHash = Object.assign({}, state.bySdHash);
+      const newFetching = Object.assign({}, state.fetching);
 
-  return Object.assign({}, state, {
-    downloadingBySdHash: newDownloading,
-    urisLoading: newLoading,
-    bySdHash: newBySdHash,
-  });
-};
+      newBySdHash[sd_hash] = fileInfo;
+      delete newFetching[sd_hash];
 
-reducers[types.DOWNLOADING_PROGRESSED] = function(state, action) {
-  const { uri, sd_hash, fileInfo } = action.data;
+      return {
+        bySdHash: newBySdHash,
+        fetching: newFetching,
+      };
+    },
 
-  const newBySdHash = Object.assign({}, state.bySdHash);
-  const newDownloading = Object.assign({}, state.downloadingBySdHash);
+    [types.DOWNLOADING_STARTED]: (state: StateFileInfo, action: Action) => {
+      const { uri, sd_hash, fileInfo } = action.data;
 
-  newBySdHash[sd_hash] = fileInfo;
-  newDownloading[sd_hash] = true;
+      const newBySdHash = Object.assign({}, state.bySdHash);
+      const newDownloading = Object.assign({}, state.downloadingBySdHash);
+      const newLoading = Object.assign({}, state.urisLoading);
 
-  return Object.assign({}, state, {
-    bySdHash: newBySdHash,
-    downloadingBySdHash: newDownloading,
-  });
-};
+      newDownloading[sd_hash] = true;
+      newBySdHash[sd_hash] = fileInfo;
+      delete newLoading[uri];
 
-reducers[types.DOWNLOADING_COMPLETED] = function(state, action) {
-  const { uri, sd_hash, fileInfo } = action.data;
+      return {
+        downloadingBySdHash: newDownloading,
+        urisLoading: newLoading,
+        bySdHash: newBySdHash,
+      };
+    },
 
-  const newBySdHash = Object.assign({}, state.bySdHash);
-  const newDownloading = Object.assign({}, state.downloadingBySdHash);
+    [types.DOWNLOADING_PROGRESSED]: (state: StateFileInfo, action: Action) => {
+      const { uri, sd_hash, fileInfo } = action.data;
 
-  newBySdHash[sd_hash] = fileInfo;
-  delete newDownloading[sd_hash];
+      const newBySdHash = Object.assign({}, state.bySdHash);
+      const newDownloading = Object.assign({}, state.downloadingBySdHash);
 
-  return Object.assign({}, state, {
-    bySdHash: newBySdHash,
-    downloadingBySdHash: newDownloading,
-  });
-};
+      newBySdHash[sd_hash] = fileInfo;
+      newDownloading[sd_hash] = true;
 
-reducers[types.FILE_DELETE] = function(state, action) {
-  const { sd_hash } = action.data;
+      return {
+        bySdHash: newBySdHash,
+        downloadingBySdHash: newDownloading,
+      };
+    },
 
-  const newBySdHash = Object.assign({}, state.bySdHash);
-  const downloadingBySdHash = Object.assign({}, state.downloadingBySdHash);
+    [types.DOWNLOADING_COMPLETED]: (state: StateFileInfo, action: Action) => {
+      const { uri, sd_hash, fileInfo } = action.data;
 
-  delete newBySdHash[sd_hash];
-  delete downloadingBySdHash[sd_hash];
+      const newBySdHash = Object.assign({}, state.bySdHash);
+      const newDownloading = Object.assign({}, state.downloadingBySdHash);
 
-  return Object.assign({}, state, {
-    bySdHash: newBySdHash,
-    downloadingBySdHash,
-  });
-};
+      newBySdHash[sd_hash] = fileInfo;
+      delete newDownloading[sd_hash];
 
-reducers[types.LOADING_VIDEO_STARTED] = function(state, action) {
-  const { uri } = action.data;
+      return {
+        bySdHash: newBySdHash,
+        downloadingBySdHash: newDownloading,
+      };
+    },
 
-  const newLoading = Object.assign({}, state.urisLoading);
+    [types.FILE_DELETE]: (state: StateFileInfo, action: Action) => {
+      const { sd_hash } = action.data;
 
-  newLoading[uri] = true;
+      const newBySdHash = Object.assign({}, state.bySdHash);
+      const downloadingBySdHash = Object.assign({}, state.downloadingBySdHash);
 
-  return Object.assign({}, state, {
-    urisLoading: newLoading,
-  });
-};
+      delete newBySdHash[sd_hash];
+      delete downloadingBySdHash[sd_hash];
 
-reducers[types.LOADING_VIDEO_FAILED] = function(state, action) {
-  const { uri } = action.data;
+      return {
+        bySdHash: newBySdHash,
+        downloadingBySdHash,
+      };
+    },
 
-  const newLoading = Object.assign({}, state.urisLoading);
+    [types.LOADING_VIDEO_STARTED]: (state: StateFileInfo, action: Action) => {
+      const { uri } = action.data;
 
-  delete newLoading[uri];
+      return {
+        urisLoading: Object.assign({}, state.urisLoading, { [uri]: true }),
+      };
+    },
 
-  return Object.assign({}, state, {
-    urisLoading: newLoading,
-  });
-};
+    [types.LOADING_VIDEO_FAILED]: (state: StateFileInfo, action: Action) => {
+      const { uri } = action.data;
 
-reducers[types.FETCH_DATE] = function(state, action) {
-  const { time } = action.data;
-  if (time) {
-    return Object.assign({}, state, {
-      publishedDate: time,
-    });
-  }
-};
+      const newLoading = Object.assign({}, state.urisLoading);
 
-export default function reducer(state = defaultState, action) {
-  const handler = reducers[action.type];
-  if (handler) return handler(state, action);
-  return state;
-}
+      delete newLoading[uri];
+
+      return {
+        urisLoading: newLoading,
+      };
+    },
+  },
+  defaultState
+);
