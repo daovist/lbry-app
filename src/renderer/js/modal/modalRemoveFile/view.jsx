@@ -29,7 +29,7 @@ class ModalRemoveFile extends React.PureComponent {
       claimIsMine,
       closeModal,
       deleteFile,
-      fileInfo: { outpoint },
+      fileInfo: { sd_hash },
       title,
     } = this.props;
     const { deleteChecked, abandonClaimChecked } = this.state;
@@ -41,7 +41,7 @@ class ModalRemoveFile extends React.PureComponent {
         type="confirm"
         confirmButtonLabel={__("Remove")}
         onConfirmed={() =>
-          deleteFile(outpoint, deleteChecked, abandonClaimChecked)
+          deleteFile(sd_hash, deleteChecked, abandonClaimChecked)
         }
         onAborted={closeModal}
       >

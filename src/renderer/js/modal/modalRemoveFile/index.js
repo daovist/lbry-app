@@ -17,8 +17,8 @@ const select = (state, props) => ({
 
 const perform = dispatch => ({
   closeModal: () => dispatch(doCloseModal()),
-  deleteFile: (fileInfo, deleteFromComputer, abandonClaim) => {
-    dispatch(doDeleteFileAndGoBack(fileInfo, deleteFromComputer, abandonClaim));
+  deleteFile: (sd_hash, deleteFromComputer, abandonClaim) => {
+    dispatch(doDeleteFileAndGoBack(sd_hash, deleteFromComputer, abandonClaim));
   },
 });
 

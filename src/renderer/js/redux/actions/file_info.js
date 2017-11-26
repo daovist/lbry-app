@@ -4,17 +4,16 @@ import { doFetchClaimListMine, doAbandonClaim } from "redux/actions/content";
 import {
   selectClaimsByUri,
   selectIsFetchingClaimListMine,
-  selectMyClaimsOutpoints,
+  selectMyPublishClaims,
 } from "redux/selectors/claims";
 import {
   selectIsFetchingFileList,
   selectFileInfosBySdHash,
   selectFetchingSdHash,
   selectTotalDownloadProgress,
-  selectSdHashesByOutpoint,
 } from "redux/selectors/file_info";
 import { doCloseModal } from "redux/actions/app";
-import { doNavigate, doHistoryBack } from "redux/actions/navigation";
+import { doHistoryBack } from "redux/actions/navigation";
 import setProgressBar from "util/setProgressBar";
 import batchActions from "util/batchActions";
 
@@ -94,36 +93,42 @@ export function doOpenFileInFolder(path) {
   };
 }
 
-export function doDeleteFile(outpoint, deleteFromComputer, abandonClaim) {
+export function doDeleteFile(sd_hash, deleteFromComputer, abandonClaim) {
   return function(dispatch, getState) {
     const state = getState();
-    const sdHash = selectSdHashesByOutpoint(state)[outpoint];
 
-    lbry.file_delete({
-      outpoint: outpoint,
-      delete_from_download_dir: deleteFromComputer,
-    });
+    console.log("zzz");
+    console.log(state);
+    console.log(selectMyPublishClaims(state));
+    console.log("file delete: " + sd_hash);
 
-    // If the file is for a claim we published then also abandom the claim
-    const myClaimsOutpoints = selectMyClaimsOutpoints(state);
-    if (abandonClaim && myClaimsOutpoints.indexOf(outpoint) !== -1) {
-      const bySdHash = selectFileInfosBySdHash(state);
-      const fileInfo = bySdHash[sd_hash];
+    // lbry.file_delete({
+    //   sd_hash: sd_hash,
+    //   delete_from_download_dir: deleteFromComputer,
+    // });
 
-      if (fileInfo) {
-        const txid = fileInfo.outpoint.slice(0, -2);
-        const nout = fileInfo.outpoint.slice(-1);
-
-        dispatch(doAbandonClaim(txid, nout));
+    // If the file is for a claim we published then also abandon the claim
+    if (abandonClaim) {
+      console.log("abandon is true");
+      const claims = selectMyPublishClaims(state);
+      console.log(claims);
+      const claim = claims.find(
+        claim => claim.value.stream.source.source === sd_hash
+      );
+      console.log(claim);
+      if (claim) {
+        dispatch(doAbandonClaim(claim.txid, claim.nout));
       }
     }
 
     dispatch({
       type: types.FILE_DELETE,
       data: {
-        sdHash,
+        sdHash: sd_hash,
       },
     });
+
+    console.log("delete dispatched");
 
     const totalProgress = selectTotalDownloadProgress(getState());
     setProgressBar(totalProgress);
@@ -131,7 +136,7 @@ export function doDeleteFile(outpoint, deleteFromComputer, abandonClaim) {
 }
 
 export function doDeleteFileAndGoBack(
-  fileInfo,
+  sd_hash,
   deleteFromComputer,
   abandonClaim
 ) {
@@ -139,7 +144,7 @@ export function doDeleteFileAndGoBack(
     const actions = [];
     actions.push(doCloseModal());
     actions.push(doHistoryBack());
-    actions.push(doDeleteFile(fileInfo, deleteFromComputer, abandonClaim));
+    actions.push(doDeleteFile(sd_hash, deleteFromComputer, abandonClaim));
     dispatch(batchActions(...actions));
   };
 }

@@ -6,7 +6,7 @@ const _selectState = state => state.claims || {};
 
 export const selectClaimsById = createSelector(
   _selectState,
-  state => state.byId || {}
+  state => state.byId
 );
 
 export const selectClaimsByUri = createSelector(
@@ -51,12 +51,12 @@ export const makeSelectClaimIsMine = rawUri => {
   const uri = lbryuri.normalize(rawUri);
   return createSelector(
     selectClaimsByUri,
-    selectMyActiveClaims,
-    (claims, myClaims) =>
+    selectMyActiveClaimIds,
+    (claims, myClaimIds) =>
       claims &&
       claims[uri] &&
       claims[uri].claim_id &&
-      myClaims.has(claims[uri].claim_id)
+      myClaimIds.indexOf(claims[uri].claim_id) !== -1
   );
 };
 
@@ -120,25 +120,26 @@ export const selectIsFetchingClaimListMine = createSelector(
   state => !!state.isFetchingClaimListMine
 );
 
-export const selectMyClaimsRaw = createSelector(
+export const selectMyClaimIds = createSelector(
   _selectState,
-  state => state.myClaims
+  state => state.myClaimIds
 );
 
 export const selectAbandoningIds = createSelector(_selectState, state =>
   Object.keys(state.abandoningById || {})
 );
 
-export const selectMyActiveClaims = createSelector(
-  selectMyClaimsRaw,
+export const selectMyActiveClaimIds = createSelector(
+  selectMyClaimIds,
   selectAbandoningIds,
-  (claims, abandoningIds) =>
-    new Set(
-      claims &&
-        claims
-          .map(claim => claim.claim_id)
-          .filter(claimId => Object.keys(abandoningIds).indexOf(claimId) === -1)
-    )
+  (claimIds, abandoningIds) => [
+    ...new Set(
+      claimIds &&
+        claimIds.filter(
+          claimId => Object.keys(abandoningIds).indexOf(claimId) === -1
+        )
+    ),
+  ]
 );
 
 export const selectPendingClaims = createSelector(_selectState, state =>
@@ -146,30 +147,33 @@ export const selectPendingClaims = createSelector(_selectState, state =>
 );
 
 export const selectMyClaims = createSelector(
-  selectMyActiveClaims,
+  selectMyActiveClaimIds,
   selectClaimsById,
   selectAbandoningIds,
   selectPendingClaims,
   (myClaimIds, byId, abandoningIds, pendingClaims) => {
     const claims = [];
-
+    console.log("in select my claims");
+    console.log(myClaimIds);
+    console.log(byId);
+    console.log(abandoningIds);
     myClaimIds.forEach(id => {
       const claim = byId[id];
-
+      if (!claim) {
+        console.log("no claim for id " + id);
+      }
       if (claim && abandoningIds.indexOf(id) == -1) claims.push(claim);
     });
+
+    console.log("returning from select my claims");
+    console.log(claims);
 
     return [...claims, ...pendingClaims];
   }
 );
 
-export const selectMyClaimsWithoutChannels = createSelector(
-  selectMyClaims,
-  myClaims => myClaims.filter(claim => !claim.name.match(/^@/))
-);
-
 export const selectAllMyClaimsByOutpoint = createSelector(
-  selectMyClaimsRaw,
+  selectMyClaims,
   claims =>
     new Set(
       claims && claims.length
@@ -178,27 +182,16 @@ export const selectAllMyClaimsByOutpoint = createSelector(
     )
 );
 
-export const selectMyClaimsOutpoints = createSelector(
-  selectMyClaims,
-  myClaims => {
-    const outpoints = [];
-
-    myClaims.forEach(claim => outpoints.push(`${claim.txid}:${claim.nout}`));
-
-    return outpoints;
-  }
+export const selectMyPublishClaims = createSelector(selectMyClaims, myClaims =>
+  myClaims.filter(
+    claim =>
+      claim.value.claimType === "streamType" && claim.category === "claim"
+  )
 );
 
 export const selectMyPublishClaimsSdHashes = createSelector(
-  selectMyClaims,
-  myClaims => {
-    return myClaims
-      .filter(
-        claim =>
-          claim.value.claimType === "streamType" && claim.category === "claim"
-      )
-      .map(claim => claim.value.stream.source.source);
-  }
+  selectMyPublishClaims,
+  myClaims => myClaims.map(claim => claim.value.stream.source.source)
 );
 
 export const selectFetchingMyChannels = createSelector(
@@ -210,12 +203,13 @@ export const selectMyChannelClaims = createSelector(
   _selectState,
   selectClaimsById,
   (state, byId) => {
-    const ids = state.myChannelClaims || [];
+    const ids = state.myChannelClaimIds;
     const claims = [];
 
     ids.forEach(id => {
       if (byId[id]) {
         //I'm not sure why this check is necessary, but it ought to be a quick fix for https://github.com/lbryio/lbry-app/issues/544
+        //Follow-up: abandoning a channel claim outside of the app may be able to reproduce this
         claims.push(byId[id]);
       }
     });

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { doNavigate } from "redux/actions/navigation";
 import { doFetchFileInfo } from "redux/actions/file_info";
 import { makeSelectFileInfoForUri } from "redux/selectors/file_info";
+import { selectMyPublishClaims } from "redux/selectors/claims";
 import { selectRewardContentClaimIds } from "redux/selectors/content";
 import { doFetchCostInfoForUri } from "redux/actions/cost_info";
 import {
@@ -17,6 +18,7 @@ import { makeSelectCurrentParam } from "redux/selectors/navigation";
 
 const select = (state, props) => ({
   claim: makeSelectClaimForUri(props.uri)(state),
+  foo: selectMyPublishClaims(state),
   contentType: makeSelectContentTypeForUri(props.uri)(state),
   costInfo: makeSelectCostInfoForUri(props.uri)(state),
   metadata: makeSelectMetadataForUri(props.uri)(state),

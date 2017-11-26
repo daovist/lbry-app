@@ -2,11 +2,11 @@ import React from "react";
 import rewards from "rewards";
 import { connect } from "react-redux";
 import { doClaimRewardType } from "redux/actions/rewards";
+import { doFetchFileInfosAndPublishedClaims } from "redux/actions/file_info";
 import { doNavigate } from "redux/actions/navigation";
 import FileListPublished from "./view";
 import {
   selectFileInfosPublished,
-  selectIsFetchingFileList,
   selectIsFetchingFileInfosOrClaims,
 } from "redux/selectors/file_info";
 
