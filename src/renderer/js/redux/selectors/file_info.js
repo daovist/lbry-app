@@ -1,25 +1,25 @@
-import lbry from "lbry";
 import { createSelector } from "reselect";
+import type { StateFileInfo } from "redux/selectors/claims";
 import {
   selectClaimsByUri,
   selectIsFetchingClaimListMine,
   selectMyClaims,
-  selectMyClaimSdHashesByOutpoint,
+  selectMyPublishClaimsSdHashes,
 } from "redux/selectors/claims";
 
 export const _selectState = state => state.fileInfo || {};
 
 export const selectFileInfosBySdHash = createSelector(
   _selectState,
-  state => state.bySdHash || {}
+  (state: StateFileInfo) => state.bySdHash || {}
 );
 
 export const selectIsFetchingFileList = createSelector(
   _selectState,
-  state => !!state.isFetchingFileList
+  (state: StateFileInfo) => !!state.isFetchingFileList
 );
 
-export const selectIsFetchingFileListDownloadedOrPublished = createSelector(
+export const selectIsFetchingFileInfosOrClaims = createSelector(
   selectIsFetchingFileList,
   selectIsFetchingClaimListMine,
   (isFetchingFileList, isFetchingClaimListMine) =>
@@ -96,16 +96,15 @@ export const selectFileInfosDownloaded = createSelector(
 
 export const selectFileInfosPublished = createSelector(
   selectFileInfosBySdHash,
-  selectMyClaimSdHashesByOutpoint,
+  selectMyPublishClaimsSdHashes,
   selectFileInfosPendingPublish,
-  (bySdHash, sdHashesByOutpoint, pendingPublish) => {
-    const fileInfos = [];
-
-    Object.keys(sdHashesByOutpoint).forEach(outpoint => {
-      const fileInfo = bySdHash[sdHashesByOutpoint[outpoint]];
-      if (fileInfo) fileInfos.push(fileInfo);
-    });
-
+  (bySdHash, sdHashes, pendingPublish) => {
+    const fileInfos = sdHashes.reduce((infos, sd_hash) => {
+      if (bySdHash[sd_hash]) {
+        infos.push(bySdHash[sd_hash]);
+      }
+      return infos;
+    }, []);
     return [...fileInfos, ...pendingPublish];
   }
 );

@@ -138,21 +138,20 @@ export function doFetchRewardedContent() {
   };
 }
 
-export function doUpdateLoadStatus(uri, outpoint, sd_hash) {
+export function doUpdateLoadStatus(uri, sd_hash) {
   return function(dispatch, getState) {
     const state = getState();
 
     lbry
       .file_list({
         sd_hash: sd_hash,
-        outpoint: outpoint,
         full_status: true,
       })
       .then(([fileInfo]) => {
         if (!fileInfo || fileInfo.written_bytes == 0) {
           // download hasn't started yet
           setTimeout(() => {
-            dispatch(doUpdateLoadStatus(uri, outpoint, sd_hash));
+            dispatch(doUpdateLoadStatus(uri, sd_hash));
           }, DOWNLOAD_POLL_INTERVAL);
         } else if (fileInfo.completed) {
           // TODO this isn't going to get called if they reload the client before
@@ -198,39 +197,33 @@ export function doUpdateLoadStatus(uri, outpoint, sd_hash) {
           setProgressBar(totalProgress);
 
           setTimeout(() => {
-            dispatch(doUpdateLoadStatus(uri, outpoint, sd_hash));
+            dispatch(doUpdateLoadStatus(uri, sd_hash));
           }, DOWNLOAD_POLL_INTERVAL);
         }
       });
   };
 }
 
-export function doStartDownload(uri, outpoint, sd_hash) {
+export function doStartDownload(uri, sd_hash) {
   return function(dispatch, getState) {
     const state = getState();
-
-    if (!outpoint) {
-      throw new Error("outpoint is required to begin a download");
-    }
 
     const { downloadingBySdHash = {} } = state.fileInfo;
 
     if (downloadingBySdHash[sd_hash]) return;
 
-    lbry
-      .file_list({ sd_hash, outpoint, full_status: true })
-      .then(([fileInfo]) => {
-        dispatch({
-          type: types.DOWNLOADING_STARTED,
-          data: {
-            uri,
-            fileInfo,
-            sd_hash,
-          },
-        });
-
-        dispatch(doUpdateLoadStatus(uri, outpoint, sd_hash));
+    lbry.file_list({ sd_hash, full_status: true }).then(([fileInfo]) => {
+      dispatch({
+        type: types.DOWNLOADING_STARTED,
+        data: {
+          uri,
+          fileInfo,
+          sd_hash,
+        },
       });
+
+      dispatch(doUpdateLoadStatus(uri, sd_hash));
+    });
   };
 }
 
@@ -238,7 +231,7 @@ export function doDownloadFile(uri, streamInfo) {
   return function(dispatch, getState) {
     const state = getState();
 
-    dispatch(doStartDownload(uri, streamInfo.outpoint, streamInfo.sd_hash));
+    dispatch(doStartDownload(uri, streamInfo.sd_hash));
 
     lbryio
       .call("file", "view", {
@@ -486,15 +479,32 @@ export function doPublish(params) {
       const success = claim => {
         resolve(claim);
 
-        if (claim === true) dispatch(doFetchClaimListMine());
-        else
+        if (claim === true) {
+          dispatch(doFetchClaimListMine());
+        } else {
           setTimeout(() => dispatch(doFetchClaimListMine()), 20000, {
             once: true,
           });
+        }
       };
       const failure = err => reject(err);
 
-      lbry.publishDeprecated(params, null, success, failure);
+      lbry.publish(params).then(success, failure);
+
+      // // Give a short grace period in case publish() returns right away or (more likely) gives an error
+      // const returnPendingTimeout = setTimeout(
+      //   () => {
+      //     if (publishedCallback) {
+      //       savePendingPublish({
+      //         name: params.name,
+      //         channel_name: params.channel_name,
+      //       });
+      //       publishedCallback(true);
+      //     }
+      //   },
+      //   2000,
+      //   { once: true }
+      // );
     });
   };
 }

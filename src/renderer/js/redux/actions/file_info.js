@@ -29,7 +29,7 @@ export function doFetchFileInfo(uri) {
 
     if (!alreadyFetching) {
       dispatch({
-        type: types.FETCH_FILE_INFO_STARTED,
+        type: types.FILE_LIST_ONE_START,
         data: {
           sd_hash,
         },
@@ -39,7 +39,7 @@ export function doFetchFileInfo(uri) {
         .file_list({ sd_hash: sd_hash, full_status: true })
         .then(fileInfos => {
           dispatch({
-            type: types.FETCH_FILE_INFO_COMPLETED,
+            type: types.FILE_LIST_ONE_COMPLETE,
             data: {
               sd_hash,
               fileInfo: fileInfos && fileInfos.length ? fileInfos[0] : null,
@@ -57,17 +57,24 @@ export function doFileList() {
 
     if (!isFetching) {
       dispatch({
-        type: types.FILE_LIST_STARTED,
+        type: types.FILE_LIST_START,
       });
 
-      lbry.file_list().then(fileInfos => {
-        dispatch({
-          type: types.FILE_LIST_SUCCEEDED,
-          data: {
-            fileInfos,
-          },
+      lbry
+        .file_list()
+        .then(fileInfos => {
+          dispatch({
+            type: types.FILE_LIST_SUCCESS,
+            data: {
+              fileInfos,
+            },
+          });
+        })
+        .catch(() => {
+          dispatch({
+            type: types.FILE_LIST_FAILURE,
+          });
         });
-      });
     }
   };
 }
@@ -143,7 +150,10 @@ export function doFetchFileInfosAndPublishedClaims() {
       isFetchingClaimListMine = selectIsFetchingClaimListMine(state),
       isFetchingFileInfo = selectIsFetchingFileList(state);
 
-    if (!isFetchingClaimListMine) dispatch(doFetchClaimListMine());
-    if (!isFetchingFileInfo) dispatch(doFileList());
+    let actions = [];
+    if (!isFetchingClaimListMine) actions.push(doFetchClaimListMine());
+    if (!isFetchingFileInfo) actions.push(doFileList());
+
+    dispatch(batchActions(...actions));
   };
 }

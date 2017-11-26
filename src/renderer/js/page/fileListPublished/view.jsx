@@ -7,22 +7,18 @@ import SubHeader from "component/subHeader";
 
 class FileListPublished extends React.PureComponent {
   componentWillMount() {
-    if (!this.props.isFetching) this.props.fetchClaims();
-  }
-
-  componentDidUpdate() {
-    // if (this.props.claims.length > 0) this.props.fetchClaims();
+    if (!this.props.isFetching) this.props.fetchFileInfos();
   }
 
   render() {
-    const { claims, isFetching, navigate } = this.props;
+    const { fileInfos, isFetching, navigate } = this.props;
 
     let content;
 
-    if (claims && claims.length > 0) {
+    if (fileInfos && fileInfos.length > 0) {
       content = (
         <FileList
-          fileInfos={claims}
+          fileInfos={fileInfos}
           fetching={isFetching}
           fileTileShowEmpty={FileTile.SHOW_EMPTY_PENDING}
         />

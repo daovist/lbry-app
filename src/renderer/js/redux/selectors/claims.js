@@ -189,17 +189,15 @@ export const selectMyClaimsOutpoints = createSelector(
   }
 );
 
-export const selectMyClaimSdHashesByOutpoint = createSelector(
+export const selectMyPublishClaimsSdHashes = createSelector(
   selectMyClaims,
   myClaims => {
-    const sdHashByOutpoint = {};
-
-    myClaims.forEach(claim => {
-      sdHashByOutpoint[`${claim.txid}:${claim.nout}`] =
-        claim.value.stream.source.source;
-    });
-
-    return sdHashByOutpoint;
+    return myClaims
+      .filter(
+        claim =>
+          claim.value.claimType === "streamType" && claim.category === "claim"
+      )
+      .map(claim => claim.value.stream.source.source);
   }
 );
 

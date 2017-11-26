@@ -7,7 +7,7 @@ import { handleActions } from "util/redux-actions";
 
 type FileInfoSdHashMap = { [string]: FileInfo };
 
-type StateFileInfo = {
+export type StateFileInfo = {
   +bySdHash: FileInfoSdHashMap,
   +downloadingBySdHash: { [string]: boolean },
   +fetching: { [string]: boolean },
@@ -27,11 +27,11 @@ const defaultState: StateFileInfo = {
 
 export default handleActions(
   {
-    [types.FILE_LIST_STARTED]: (state: StateFileInfo, action: Action) => ({
+    [types.FILE_LIST_START]: (state: StateFileInfo, action: Action) => ({
       isFetchingFileList: true,
     }),
 
-    [types.FILE_LIST_SUCCEEDED]: (state: StateFileInfo, action: Action) => {
+    [types.FILE_LIST_SUCCESS]: (state: StateFileInfo, action: Action) => {
       const { fileInfos } = action.data;
       const newBySdHash = Object.assign({}, state.bySdHash);
 
@@ -47,7 +47,11 @@ export default handleActions(
       };
     },
 
-    [types.FETCH_FILE_INFO_STARTED]: (state: StateFileInfo, action: Action) => {
+    [types.FILE_LIST_FAILURE]: (state: StateFileInfo, action: Action) => {
+      isFetchingFileList: false;
+    },
+
+    [types.FILE_LIST_ONE_START]: (state: StateFileInfo, action: Action) => {
       const { sd_hash } = action.data;
       const newFetching = Object.assign({}, state.fetching);
 
@@ -58,10 +62,7 @@ export default handleActions(
       };
     },
 
-    [types.FETCH_FILE_INFO_COMPLETED]: (
-      state: StateFileInfo,
-      action: Action
-    ) => {
+    [types.FILE_LIST_ONE_COMPLETE]: (state: StateFileInfo, action: Action) => {
       const { fileInfo, sd_hash } = action.data;
 
       const newBySdHash = Object.assign({}, state.bySdHash);

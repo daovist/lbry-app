@@ -22,7 +22,7 @@ class FileDownloadLink extends React.PureComponent {
       fileInfo.written_bytes !== false &&
       fileInfo.written_bytes < fileInfo.total_bytes
     ) {
-      restartDownload(uri, fileInfo.outpoint);
+      restartDownload(uri, fileInfo.sd_hash);
     }
   }
 

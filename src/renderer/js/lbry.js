@@ -11,7 +11,6 @@ function setLocal(key, value) {
 }
 
 const { remote, ipcRenderer } = require("electron");
-const menu = remote.require("./menu/main-menu");
 
 let lbry = {
   isConnected: false,
@@ -154,55 +153,6 @@ lbry.connect = function() {
   return lbry._connectPromise;
 };
 
-/**
- * Publishes a file. The optional fileListedCallback is called when the file becomes available in
- * lbry.file_list() during the publish process.
- *
- * This currently includes a work-around to cache the file in local storage so that the pending
- * publish can appear in the UI immediately.
- */
-lbry.publishDeprecated = function(
-  params,
-  fileListedCallback,
-  publishedCallback,
-  errorCallback
-) {
-  lbry.publish(params).then(
-    result => {
-      if (returnPendingTimeout) clearTimeout(returnPendingTimeout);
-      publishedCallback(result);
-    },
-    err => {
-      if (returnPendingTimeout) clearTimeout(returnPendingTimeout);
-      errorCallback(err);
-    }
-  );
-
-  // Give a short grace period in case publish() returns right away or (more likely) gives an error
-  const returnPendingTimeout = setTimeout(
-    () => {
-      if (publishedCallback) {
-        savePendingPublish({
-          name: params.name,
-          channel_name: params.channel_name,
-        });
-        publishedCallback(true);
-      }
-
-      if (fileListedCallback) {
-        const { name, channel_name } = params;
-        savePendingPublish({
-          name: params.name,
-          channel_name: params.channel_name,
-        });
-        fileListedCallback(true);
-      }
-    },
-    2000,
-    { once: true }
-  );
-};
-
 lbry.imagePath = function(file) {
   return "img/" + file;
 };
@@ -251,74 +201,75 @@ lbry.getAppVersionInfo = function() {
  * Returns results from the file_list API method, plus dummy entries for pending publishes.
  * (If a real publish with the same name is found, the pending publish will be ignored and removed.)
  */
-lbry.file_list = function(params = {}) {
-  return new Promise((resolve, reject) => {
-    const { name, channel_name, outpoint, sd_hash } = params;
+// lbry.file_list = function(params = {}) {
+//   return new Promise((resolve, reject) => {
+//     const { name, channel_name, sd_hash } = params;
+//
+//     /**
+//      * sd_hash is now used as a param to the API call
+//      * see https://github.com/lbryio/lbry-app/issues/693 for reference
+//      * rest all of the functionality remains the same and it is still based on outpoints
+//      */
+//     const newParams = { sd_hash, full_status: params.full_status };
+//
+//     /**
+//      * If we're searching by outpoint, check first to see if there's a matching pending publish.
+//      * Pending publishes use their own faux outpoints that are always unique, so we don't need
+//      * to check if there's a real file.
+//      */
+//     if (sd_hash) {
+//       const pendingPublish = getPendingPublish({ sd_hash });
+//       if (pendingPublish) {
+//         resolve([pendingPublishToDummyFileInfo(pendingPublish)]);
+//         return;
+//       }
+//     }
+//
+//     apiCall(
+//       "file_list",
+//       newParams,
+//       fileInfos => {
+//         removePendingPublishIfNeeded({ name, channel_name, sd_hash });
+//
+//         //if a naked file_list call, append the pending file infos
+//         if (!name && !channel_name && !sd_hash) {
+//           const dummyFileInfos = lbry
+//             .getPendingPublishes()
+//             .map(pendingPublishToDummyFileInfo);
+//
+//           resolve([...fileInfos, ...dummyFileInfos]);
+//         } else {
+//           resolve(fileInfos);
+//         }
+//       },
+//       reject
+//     );
+//   });
+// };
 
-    /**
-     * sd_hash is now used as a param to the API call
-     * see https://github.com/lbryio/lbry-app/issues/693 for reference
-     * rest all of the functionality remains the same and it is still based on outpoints
-     */
-    const newParams = { sd_hash, full_status: params.full_status };
-    /**
-     * If we're searching by outpoint, check first to see if there's a matching pending publish.
-     * Pending publishes use their own faux outpoints that are always unique, so we don't need
-     * to check if there's a real file.
-     */
-    if (outpoint) {
-      const pendingPublish = getPendingPublish({ outpoint });
-      if (pendingPublish) {
-        resolve([pendingPublishToDummyFileInfo(pendingPublish)]);
-        return;
-      }
-    }
-
-    apiCall(
-      "file_list",
-      newParams,
-      fileInfos => {
-        removePendingPublishIfNeeded({ name, channel_name, outpoint });
-
-        //if a naked file_list call, append the pending file infos
-        if (!name && !channel_name && !outpoint) {
-          const dummyFileInfos = lbry
-            .getPendingPublishes()
-            .map(pendingPublishToDummyFileInfo);
-
-          resolve([...fileInfos, ...dummyFileInfos]);
-        } else {
-          resolve(fileInfos);
-        }
-      },
-      reject
-    );
-  });
-};
-
-lbry.claim_list_mine = function(params = {}) {
-  return new Promise((resolve, reject) => {
-    apiCall(
-      "claim_list_mine",
-      params,
-      claims => {
-        for (let { name, channel_name, txid, nout } of claims) {
-          removePendingPublishIfNeeded({
-            name,
-            channel_name,
-            outpoint: txid + ":" + nout,
-          });
-        }
-
-        const dummyClaims = lbry
-          .getPendingPublishes()
-          .map(pendingPublishToDummyClaim);
-        resolve([...claims, ...dummyClaims]);
-      },
-      reject
-    );
-  });
-};
+// lbry.claim_list_mine = function(params = {}) {
+//   return new Promise((resolve, reject) => {
+//     apiCall(
+//       "claim_list_mine",
+//       params,
+//       claims => {
+//         for (let { name, channel_name, txid, nout } of claims) {
+//           removePendingPublishIfNeeded({
+//             name,
+//             channel_name,
+//             outpoint: txid + ":" + nout,
+//           });
+//         }
+//
+//         const dummyClaims = lbry
+//           .getPendingPublishes()
+//           .map(pendingPublishToDummyClaim);
+//         resolve([...claims, ...dummyClaims]);
+//       },
+//       reject
+//     );
+//   });
+// };
 
 lbry.resolve = function(params = {}) {
   return new Promise((resolve, reject) => {

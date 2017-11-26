@@ -23,7 +23,7 @@ const perform = dispatch => ({
   checkAvailability: uri => dispatch(doFetchAvailability(uri)),
   openInShell: path => dispatch(doOpenFileInShell(path)),
   purchaseUri: uri => dispatch(doPurchaseUri(uri)),
-  restartDownload: (uri, outpoint) => dispatch(doStartDownload(uri, outpoint)),
+  restartDownload: (uri, sd_hash) => dispatch(doStartDownload(uri, sd_hash)),
 });
 
 export default connect(select, perform)(FileDownloadLink);

@@ -1,14 +1,13 @@
 import React from "react";
 import Link from "component/link";
 import { FileTile } from "component/fileTile";
-import { BusyMessage, Thumbnail } from "component/common.js";
+import { BusyMessage } from "component/common.js";
 import FileList from "component/fileList";
 import SubHeader from "component/subHeader";
 
 class FileListDownloaded extends React.PureComponent {
   componentWillMount() {
-    if (!this.props.isFetchingClaims) this.props.fetchClaims();
-    if (!this.props.isFetching) this.props.fetchFileInfosDownloaded();
+    this.props.fetchFileInfos();
   }
 
   render() {
