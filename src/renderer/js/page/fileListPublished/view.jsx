@@ -15,6 +15,9 @@ class FileListPublished extends React.PureComponent {
 
     let content;
 
+    console.log("in published page");
+    console.log(fileInfos);
+
     if (fileInfos && fileInfos.length > 0) {
       content = (
         <FileList

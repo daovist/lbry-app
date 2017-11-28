@@ -156,7 +156,6 @@ export const selectMyClaims = createSelector(
     console.log("in select my claims");
     console.log(myClaimIds);
     console.log(byId);
-    console.log(abandoningIds);
     myClaimIds.forEach(id => {
       const claim = byId[id];
       if (!claim) {

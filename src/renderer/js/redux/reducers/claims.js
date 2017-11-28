@@ -45,6 +45,9 @@ export default handleActions(
 
       for (let [uri, { certificate, claim }] of Object.entries(resolveInfo)) {
         if (claim) {
+          if (byId[claim.claim_id] && !claim.category) {
+            claim.category = byId[claim.claim_id].category;
+          }
           byId[claim.claim_id] = claim;
           byUri[uri] = claim.claim_id;
         } else if (claim === undefined && certificate !== undefined) {
