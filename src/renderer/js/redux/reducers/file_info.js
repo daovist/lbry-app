@@ -3,7 +3,7 @@
 import * as types from "constants/action_types";
 import type { Action } from "types/Action";
 import type { FileInfo } from "types/FileInfo";
-import { handleActions } from "util/redux-actions";
+import { handleActions } from "util/redux-utils";
 
 type FileInfoSdHashMap = { [string]: FileInfo };
 
