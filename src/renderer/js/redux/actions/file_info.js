@@ -115,6 +115,7 @@ export function doDeleteFile(sd_hash, deleteFromComputer, abandonClaim) {
       const claim = claims.find(
         claim => claim.value.stream.source.source === sd_hash
       );
+      console.log("calling abandon with...");
       console.log(claim);
       if (claim) {
         dispatch(doAbandonClaim(claim.txid, claim.nout));

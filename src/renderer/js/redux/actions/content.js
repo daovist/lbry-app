@@ -509,45 +509,58 @@ export function doPublish(params) {
   };
 }
 
+var a = 5;
+
 export function doAbandonClaim(txid, nout) {
   return function(dispatch, getState) {
     const state = getState();
     const transactionItems = selectTransactionItems(state);
-    const { claim_id: claimId, claim_name: name } = transactionItems.find(
+    const claim = transactionItems.find(
       claim => claim.txid == txid && claim.nout == nout
     );
 
-    dispatch({
-      type: types.ABANDON_CLAIM_STARTED,
-      data: {
-        claimId: claimId,
-      },
-    });
+    if (claim) {
+      const { claim_id: claimId, claim_name: name } = claim;
 
-    const errorCallback = error => {
-      dispatch(doOpenModal(modals.TRANSACTION_FAILED));
-    };
+      dispatch({
+        type: types.ABANDON_CLAIM_STARTED,
+        data: {
+          claimId: claimId,
+        },
+      });
 
-    const successCallback = results => {
-      if (results.txid) {
-        dispatch({
-          type: types.ABANDON_CLAIM_SUCCEEDED,
-          data: {
-            claimId: claimId,
-          },
-        });
-        dispatch(doResolveUri(lbryuri.build({ name, claimId })));
-        dispatch(doFetchClaimListMine());
-      } else {
+      const errorCallback = error => {
         dispatch(doOpenModal(modals.TRANSACTION_FAILED));
-      }
-    };
+      };
 
-    lbry
-      .claim_abandon({
-        txid: txid,
-        nout: nout,
-      })
-      .then(successCallback, errorCallback);
+      const successCallback = results => {
+        if (results.txid) {
+          dispatch({
+            type: types.ABANDON_CLAIM_SUCCEEDED,
+            data: {
+              claimId: claimId,
+            },
+          });
+          dispatch(doResolveUri(lbryuri.build({ name, claimId })));
+          dispatch(doFetchClaimListMine());
+        } else {
+          dispatch(doOpenModal(modals.TRANSACTION_FAILED));
+        }
+      };
+
+      console.log("would abandon claim: ");
+      console.log(claim);
+      if (false) {
+        lbry
+          .claim_abandon({
+            txid: txid,
+            nout: nout,
+          })
+          .then(successCallback, errorCallback);
+      }
+    } else {
+      console.log("dispatch alert error");
+      dispatch(doAlertError(new Error("Unable to find claim to abandon.")));
+    }
   };
 }
