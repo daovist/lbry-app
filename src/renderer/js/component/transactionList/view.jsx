@@ -32,8 +32,8 @@ class TransactionList extends React.PureComponent {
     return this.props.myClaims.has(`${txid}:${nout}`);
   }
 
-  revokeClaim(txid, nout) {
-    this.props.openModal(modals.CONFIRM_CLAIM_REVOKE, { txid, nout });
+  revokeClaim(claimId) {
+    this.props.openModal(modals.CONFIRM_CLAIM_REVOKE, { claimId });
   }
 
   render() {

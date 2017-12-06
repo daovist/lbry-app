@@ -34,8 +34,6 @@ class FilePage extends React.PureComponent {
   }
 
   render() {
-    console.log("file page render");
-    console.log(this.props.foo);
     const {
       claim,
       fileInfo,

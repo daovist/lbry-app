@@ -118,7 +118,7 @@ export function doDeleteFile(sd_hash, deleteFromComputer, abandonClaim) {
       console.log("calling abandon with...");
       console.log(claim);
       if (claim) {
-        dispatch(doAbandonClaim(claim.txid, claim.nout));
+        dispatch(doAbandonClaim(claim.claim_id));
       }
     }
 
@@ -128,8 +128,6 @@ export function doDeleteFile(sd_hash, deleteFromComputer, abandonClaim) {
         sdHash: sd_hash,
       },
     });
-
-    console.log("delete dispatched");
 
     const totalProgress = selectTotalDownloadProgress(getState());
     setProgressBar(totalProgress);
@@ -143,7 +141,6 @@ export function doDeleteFileAndGoBack(
 ) {
   return function(dispatch, getState) {
     const actions = [];
-    actions.push(doCloseModal());
     actions.push(doHistoryBack());
     actions.push(doDeleteFile(sd_hash, deleteFromComputer, abandonClaim));
     dispatch(batchActions(...actions));

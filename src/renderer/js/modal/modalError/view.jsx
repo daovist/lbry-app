@@ -6,7 +6,14 @@ class ModalError extends React.PureComponent {
   render() {
     const { closeModal, error } = this.props;
 
-    const errorObj = typeof error === "string" ? { message: error } : error;
+    let errorObj;
+    if (typeof error === "string") {
+      errorObj = { message: error };
+    } else if (error instanceof Error) {
+      errorObj = { message: error.message };
+    } else {
+      errorObj = error;
+    }
 
     const error_key_labels = {
       connectionString: __("API connection string"),

@@ -8,9 +8,7 @@ import * as txnTypes from "constants/transaction_types";
 
 class TransactionListItem extends React.PureComponent {
   abandonClaim() {
-    const { txid, nout } = this.props.transaction;
-
-    this.props.revokeClaim(txid, nout);
+    this.props.revokeClaim(this.props.transaction.claim_id);
   }
 
   getLink(type) {

@@ -8,10 +8,10 @@ class ModalRevokeClaim extends React.PureComponent {
   }
 
   revokeClaim() {
-    const { txid, nout } = this.props;
+    const { claimId } = this.props;
 
     this.props.closeModal();
-    this.props.abandonClaim(txid, nout);
+    this.props.abandonClaim(claimId);
   }
 
   getButtonLabel(type) {
@@ -63,10 +63,8 @@ class ModalRevokeClaim extends React.PureComponent {
   }
 
   render() {
-    const { transactionItems, txid, nout, closeModal } = this.props;
-    const { type } = transactionItems.find(
-      claim => claim.txid == txid && claim.nout == nout
-    );
+    const { transactionItems, claimId, closeModal } = this.props;
+    const { type } = transactionItems.find(claim => claim.claim_id == claimId);
 
     return (
       <Modal

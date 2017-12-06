@@ -11,7 +11,7 @@ const select = state => ({
 
 const perform = dispatch => ({
   closeModal: () => dispatch(doCloseModal()),
-  abandonClaim: (txid, nout) => dispatch(doAbandonClaim(txid, nout)),
+  abandonClaim: claimId => dispatch(doAbandonClaim(claimId)),
 });
 
 export default connect(select, perform)(ModalRevokeClaim);

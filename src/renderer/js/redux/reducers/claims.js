@@ -6,11 +6,10 @@ import type { Claim } from "types/Claim";
 import { handleActions } from "util/redux-utils";
 
 type ClaimId = string;
-type ClaimIdMap = { [ClaimId]: Claim };
 
-export type StateClaims = {
+export type StateClaims = {|
   +abandoningById: { [ClaimId]: boolean },
-  +byId: ClaimIdMap,
+  +byId: { [ClaimId]: Claim },
   +claimsByChannel: {
     [string]: { all: Array<ClaimId>, [number]: Array<ClaimId> },
   },
@@ -20,8 +19,8 @@ export type StateClaims = {
   +isFetchingClaimListMine: boolean,
   +myChannelClaimIds: Array<ClaimId>,
   +myClaimIds: Array<ClaimId>,
-  +pendingById: {},
-};
+  +pendingById: { [number]: Claim },
+|};
 
 const defaultState: StateClaims = {
   abandoningById: {},
@@ -43,7 +42,8 @@ export default handleActions(
       const byUri = Object.assign({}, state.claimsByUri);
       const byId = Object.assign({}, state.byId);
 
-      for (let [uri, { certificate, claim }] of Object.entries(resolveInfo)) {
+      for (const uri of Object.keys(resolveInfo)) {
+        const { certificate, claim } = resolveInfo[uri];
         if (claim) {
           if (byId[claim.claim_id] && !claim.category) {
             claim.category = byId[claim.claim_id].category;
@@ -82,33 +82,34 @@ export default handleActions(
       action: Action
     ) => {
       const { claims } = action.data;
-      const byId = Object.assign({}, state.byId);
+      let byId = Object.assign({}, state.byId);
       let myClaimIds = state.myClaimIds.slice();
-      const pendingById = Object.assign({}, state.pendingById);
+      let pendingById = Object.assign({}, state.pendingById);
 
       claims
         .filter(claim => claim.category && claim.category.match(/claim/))
         .forEach(claim => {
           byId[claim.claim_id] = claim;
           myClaimIds.push(claim.claim_id);
-          const pending = Object.values(pendingById).find(pendingClaim => {
-            return (
+          Object.keys(pendingById).forEach(pendingClaimId => {
+            const pendingClaim = pendingById[pendingClaimId];
+            if (
               pendingClaim.name == claim.name &&
               pendingClaim.channel_name == claim.channel_name
-            );
+            ) {
+              delete pendingById[pendingClaim.claim_id];
+            }
           });
-
-          if (pending) {
-            delete pendingById[pending.claim_id];
-          }
         });
 
       // Remove old timed out pending publishes
-      const old = Object.values(pendingById)
-        .filter(
-          pendingClaim => Date.now() - pendingClaim.time >= 20 * 60 * 1000
-        )
-        .forEach(pendingClaim => {
+      const old = Object.keys(pendingById)
+        .filter(pendingClaimId => {
+          const pendingClaim = pendingById[pendingClaimId];
+          return Date.now() - pendingClaim.time >= 20 * 60 * 1000;
+        })
+        .forEach(pendingClaimId => {
+          const pendingClaim = pendingById[pendingClaimId];
           delete pendingById[pendingClaim.claim_id];
         });
 

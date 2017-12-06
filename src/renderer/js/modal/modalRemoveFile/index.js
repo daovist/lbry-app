@@ -18,6 +18,7 @@ const select = (state, props) => ({
 const perform = dispatch => ({
   closeModal: () => dispatch(doCloseModal()),
   deleteFile: (sd_hash, deleteFromComputer, abandonClaim) => {
+    dispatch(doCloseModal()); //this is specifically dispatched separately so that subsequent actions can open a modal (if batched, this will close modals opened in the same batch)
     dispatch(doDeleteFileAndGoBack(sd_hash, deleteFromComputer, abandonClaim));
   },
 });

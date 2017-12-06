@@ -153,19 +153,10 @@ export const selectMyClaims = createSelector(
   selectPendingClaims,
   (myClaimIds, byId, abandoningIds, pendingClaims) => {
     const claims = [];
-    console.log("in select my claims");
-    console.log(myClaimIds);
-    console.log(byId);
     myClaimIds.forEach(id => {
       const claim = byId[id];
-      if (!claim) {
-        console.log("no claim for id " + id);
-      }
       if (claim && abandoningIds.indexOf(id) == -1) claims.push(claim);
     });
-
-    console.log("returning from select my claims");
-    console.log(claims);
 
     return [...claims, ...pendingClaims];
   }
