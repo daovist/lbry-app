@@ -80,9 +80,37 @@ export class SplashScreen extends React.PureComponent {
     }, 500);
   }
 
+  /* below code should be moved out of this component, but was moved here as part of a refactor to eliminate non-API code from lbry.js */
+  connect() {
+    return new Promise((resolve, reject) => {
+      let tryNum = 0;
+
+      function checkDaemonStartedFailed() {
+        if (tryNum <= 200) {
+          // Move # of tries into constant or config option
+          setTimeout(() => {
+            tryNum++;
+            checkDaemonStarted();
+          }, tryNum < 50 ? 400 : 1000);
+        } else {
+          reject(new Error("Unable to connect to LBRY"));
+        }
+      }
+
+      // Check every half second to see if the daemon is accepting connections
+      function checkDaemonStarted() {
+        lbry
+          .status()
+          .then(resolve)
+          .catch(checkDaemonStartedFailed);
+      }
+
+      checkDaemonStarted();
+    });
+  }
+
   componentDidMount() {
-    lbry
-      .connect()
+    this.connect()
       .then(this.props.checkDaemonVersion)
       .then(() => {
         this.updateStatus();

@@ -1,5 +1,4 @@
 import React from "react";
-import lbry from "lbry.js";
 import lbryuri from "lbryuri.js";
 import Video from "component/video";
 import { Thumbnail } from "component/common";
@@ -9,6 +8,7 @@ import UriIndicator from "component/uriIndicator";
 import Icon from "component/icon";
 import WalletSendTip from "component/walletSendTip";
 import DateTime from "component/dateTime";
+import getMediaType from "util/media-type";
 import * as icons from "constants/icons";
 
 class FilePage extends React.PureComponent {
@@ -55,7 +55,7 @@ class FilePage extends React.PureComponent {
     const { height } = claim;
     const title = metadata.title;
     const isRewardContent = rewardedContentClaimIds.includes(claim.claim_id);
-    const mediaType = lbry.getMediaType(contentType);
+    const mediaType = getMediaType(contentType);
     const player = require("render-media");
     const obscureNsfw = this.props.obscureNsfw && metadata && metadata.nsfw;
     const isPlayable =

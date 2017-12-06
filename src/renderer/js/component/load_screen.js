@@ -26,7 +26,7 @@ class LoadScreen extends React.PureComponent {
   };
 
   render() {
-    const imgSrc = lbry.imagePath("lbry-white-485x160.png");
+    const imgSrc = "./img/lbry-white-485x160.png";
     return (
       <div className="load-screen">
         <img src={imgSrc} alt="LBRY" />

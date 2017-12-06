@@ -189,7 +189,7 @@ export class Thumbnail extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    this._defaultImageUri = lbry.imagePath("default-thumb.svg");
+    this._defaultImageUri = "./img/default-thumb.svg";
     this._maxLoadTime = 10000;
     this._isMounted = false;
 

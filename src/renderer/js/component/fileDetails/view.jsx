@@ -4,6 +4,7 @@ import lbry from "lbry.js";
 import FileActions from "component/fileActions";
 import Link from "component/link";
 import DateTime from "component/dateTime";
+import getMediaType from "util/media-type";
 
 const path = require("path");
 
@@ -27,7 +28,7 @@ class FileDetails extends React.PureComponent {
     }
 
     const { description, language, license } = metadata;
-    const mediaType = lbry.getMediaType(contentType);
+    const mediaType = getMediaType(contentType);
 
     const downloadPath = fileInfo
       ? path.normalize(fileInfo.download_path)

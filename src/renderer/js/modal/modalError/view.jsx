@@ -56,7 +56,7 @@ class ModalError extends React.PureComponent {
           <div>
             <img
               className="error-modal__warning-symbol"
-              src={lbry.imagePath("warning.png")}
+              src="./img/warning.png"
             />
           </div>
           <p>
