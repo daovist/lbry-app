@@ -99,12 +99,14 @@ export const selectFileInfosPublished = createSelector(
   selectMyPublishClaimsSdHashes,
   selectFileInfosPendingPublish,
   (bySdHash, sdHashes, pendingPublish) => {
+    console.log("select file infos");
     const fileInfos = sdHashes.reduce((infos, sd_hash) => {
       if (bySdHash[sd_hash]) {
         infos.push(bySdHash[sd_hash]);
       }
       return infos;
     }, []);
+    console.log(fileInfos);
     return [...fileInfos, ...pendingPublish];
   }
 );

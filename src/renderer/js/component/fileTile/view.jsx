@@ -69,11 +69,14 @@ class FileTile extends React.PureComponent {
       fileInfo,
     } = this.props;
 
+    console.log("File tile");
+    console.log(this.props);
+
     const uri = lbryuri.normalize(this.props.uri);
     const isClaimed = !!claim;
     const isClaimable = lbryuri.isClaimable(uri);
     const title =
-      isClaimed && metadata && metadata.title
+      metadata && metadata.title
         ? metadata.title
         : lbryuri.parse(uri).contentName;
     const thumbnail =
@@ -83,11 +86,6 @@ class FileTile extends React.PureComponent {
       claim && rewardedContentClaimIds.includes(claim.claim_id);
 
     let onClick = () => navigate("/show", { uri });
-
-    let name = "";
-    if (claim) {
-      name = claim.name;
-    }
 
     let description = "";
     if (isClaimed) {
@@ -120,7 +118,7 @@ class FileTile extends React.PureComponent {
       >
         <div onClick={onClick} className="card__link">
           <div className={"card__inner file-tile__row"}>
-            <CardMedia title={title || name} thumbnail={thumbnail} />
+            <CardMedia title={title} thumbnail={thumbnail} />
             <div className="file-tile__content">
               <div className="card__title-primary">
                 <span className="card__indicators">
@@ -129,7 +127,7 @@ class FileTile extends React.PureComponent {
                   {showLocal && fileInfo && <Icon icon={icons.LOCAL} />}
                 </span>
                 <h3>
-                  <TruncatedText lines={1}>{title || name}</TruncatedText>
+                  <TruncatedText lines={1}>{title}</TruncatedText>
                 </h3>
               </div>
               {description && (

@@ -5,7 +5,6 @@ import {
   selectFileInfosDownloaded,
   selectIsFetchingFileInfosOrClaims,
 } from "redux/selectors/file_info";
-import { selectIsFetchingClaimListMine } from "redux/selectors/claims";
 import { doNavigate } from "redux/actions/navigation";
 import FileListDownloaded from "./view";
 
