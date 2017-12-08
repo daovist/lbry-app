@@ -50,17 +50,7 @@ function apiCall(
         return resolve(response.result);
       }
     })
-    .catch(e => {
-      var errorEvent = new CustomEvent("unhandledError", {
-        detail: {
-          method: method,
-          params: params,
-          code: e.response && e.response.status,
-          message: window.__("Connection to API server failed"),
-        },
-      });
-      document.dispatchEvent(errorEvent);
-    });
+    .catch(reject);
 }
 
 export default new Proxy(

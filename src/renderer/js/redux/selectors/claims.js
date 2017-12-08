@@ -35,6 +35,37 @@ export const selectClaimsByUri = createSelector(
   }
 );
 
+export const selectClaimsByOutpoint = createSelector(
+  selectClaimsById,
+  claims => {
+    console.log("select claims by outpoint");
+    console.log(claims);
+    return Object.values(claims).reduce((byOutpoint, claim) => {
+      if (claim.outpoint) {
+        byOutpoint[claim.outpoint] = claim;
+      }
+      return byOutpoint;
+    }, {});
+  }
+);
+
+export const makeSelectClaimsByOutpoints = outpoints => {
+  return createSelector(selectClaimsByOutpoint, allClaims => {
+    console.log("make selct claims by outpoint");
+    console.log(outpoints);
+    console.log(allClaims);
+    let ret = outpoints.reduce((claims, outpoint) => {
+      if (allClaims[outpoint]) {
+        claims[outpoint] = allClaims[outpoint];
+      }
+      return claims;
+    }, {});
+    console.log("ret");
+    console.log(ret);
+    return ret;
+  });
+};
+
 export const selectAllClaimsByChannel = createSelector(
   _selectState,
   state => state.claimsByChannel || {}
@@ -187,6 +218,11 @@ export const selectMyPublishClaimsSdHashes = createSelector(
 export const selectFetchingMyChannels = createSelector(
   _selectState,
   state => !!state.fetchingMyChannels
+);
+
+export const selectClaimShowPendingOutpoints = createSelector(
+  _selectState,
+  state => state.claimShowPendingOutpoints
 );
 
 export const selectMyChannelClaims = createSelector(

@@ -14,6 +14,7 @@ export type StateClaims = {|
     [string]: { all: Array<ClaimId>, [number]: Array<ClaimId> },
   },
   +claimsByUri: { [string]: ?ClaimId },
+  +claimShowPendingOutpoints: Array<string>,
   +fetchingChannelClaims: { [string]: boolean },
   +fetchingMyChannels: boolean,
   +isFetchingClaimListMine: boolean,
@@ -27,6 +28,7 @@ const defaultState: StateClaims = {
   byId: {},
   claimsByChannel: {},
   claimsByUri: {},
+  claimShowPendingOutpoints: [],
   fetchingChannelClaims: {},
   fetchingMyChannels: false,
   isFetchingClaimListMine: false,
@@ -45,6 +47,7 @@ export default handleActions(
       for (const uri of Object.keys(resolveInfo)) {
         const { certificate, claim } = resolveInfo[uri];
         if (claim) {
+          //below line shouldn't exist, it is a bug in lbry - lbry does not provide consistent claim response signatures
           if (byId[claim.claim_id] && !claim.category) {
             claim.category = byId[claim.claim_id].category;
           }
@@ -89,6 +92,10 @@ export default handleActions(
       claims
         .filter(claim => claim.category && claim.category.match(/claim/))
         .forEach(claim => {
+          //below line shouldn't exist, it is a bug in lbry - lbry does not provide consistent claim response signatures
+          if (byId[claim.claim_id] && !claim.category) {
+            claim.category = byId[claim.claim_id].category;
+          }
           byId[claim.claim_id] = claim;
           myClaimIds.push(claim.claim_id);
           Object.keys(pendingById).forEach(pendingClaimId => {
@@ -119,6 +126,40 @@ export default handleActions(
         byId,
         pendingById,
       };
+    },
+
+    [types.CLAIM_SHOW_STARTED]: (state: StateClaims, action: Action) => {
+      const { outpoint } = action.data;
+
+      let claimShowPendingOutpoints = new Set(state.claimShowPendingOutpoints);
+
+      claimShowPendingOutpoints.add(outpoint);
+
+      return { claimShowPendingOutpoints: [...claimShowPendingOutpoints] };
+    },
+
+    [types.CLAIM_SHOW_SUCCESS]: (state: StateClaims, action: Action) => {
+      const { claim } = action.data;
+      let byId = Object.assign({}, state.byId);
+
+      //below line shouldn't exist, it is a bug in lbry - lbry does not provide consistent claim response signatures
+      if (byId[claim.claim_id] && !claim.category) {
+        claim.category = byId[claim.claim_id].category;
+      }
+
+      byId[claim.claim_id] = claim;
+
+      return { byId };
+    },
+
+    [types.CLAIM_SHOW_FAILURE]: (state: StateClaims, action: Action) => {
+      const { outpoint } = action.data;
+
+      let claimShowPendingOutpoints = new Set(state.claimShowPendingOutpoints);
+
+      claimShowPendingOutpoints.delete(outpoint);
+
+      return { claimShowPendingOutpoints: [...claimShowPendingOutpoints] };
     },
 
     [types.FETCH_CHANNEL_LIST_MINE_STARTED]: (

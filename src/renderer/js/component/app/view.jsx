@@ -14,7 +14,19 @@ class App extends React.PureComponent {
 
   componentWillMount() {
     const { alertError } = this.props;
-
+    window.addEventListener("unhandledrejection", event => {
+      console.log("unhandled rejection");
+      console.log(event);
+      // var errorEvent = new CustomEvent("unhandledError", {
+      //   detail: {
+      //     method: method,
+      //     params: params,
+      //     code: e.response && e.response.status,
+      //     message: window.__("Connection to API server failed"),
+      //   },
+      // });
+      // document.dispatchEvent(errorEvent);
+    });
     document.addEventListener("unhandledError", event => {
       alertError(event.detail);
     });

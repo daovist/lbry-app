@@ -60,7 +60,7 @@ export function doFileList() {
       });
 
       lbry
-        .file_list()
+        .file_list({ full_status: true })
         .then(fileInfos => {
           dispatch({
             type: types.FILE_LIST_SUCCESS,

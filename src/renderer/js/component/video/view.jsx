@@ -21,6 +21,7 @@ class Video extends React.PureComponent {
     return (
       this.props.fileInfo &&
       nextProps.fileInfo &&
+      this.props.fileInfo.outpoint &&
       this.props.fileInfo.outpoint === nextProps.fileInfo.outpoint
     );
   }
