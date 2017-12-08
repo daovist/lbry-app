@@ -5,7 +5,7 @@ import SnackBar from "component/snackBar";
 import { Provider } from "react-redux";
 import store from "store.js";
 import SplashScreen from "component/splash";
-import { doDaemonReady } from "redux/actions/app";
+import { doDaemonReady, doAutoUpdate } from "redux/actions/app";
 import { doNavigate } from "redux/actions/navigation";
 import { doDownloadLanguages } from "redux/actions/settings";
 import * as types from "constants/action_types";
@@ -16,6 +16,7 @@ import "scss/all.scss";
 const env = process.env.NODE_ENV || "production";
 const { remote, ipcRenderer, shell } = require("electron");
 const contextMenu = remote.require("./main.js").contextMenu;
+const { autoUpdater } = remote.require("electron-updater");
 const app = require("./app");
 
 // Workaround for https://github.com/electron-userland/electron-webpack/issues/52
@@ -90,6 +91,9 @@ document.addEventListener("click", event => {
 const initialState = app.store.getState();
 
 var init = function() {
+  autoUpdater.on("update-downloaded", () => {
+    app.store.dispatch(doAutoUpdate());
+  });
   app.store.dispatch(doDownloadLanguages());
 
   function onDaemonReady() {

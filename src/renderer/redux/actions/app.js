@@ -17,6 +17,7 @@ import { doFetchRewardedContent } from "redux/actions/content";
 import { selectCurrentModal } from "redux/selectors/app";
 
 const { remote, ipcRenderer, shell } = require("electron");
+const { autoUpdater } = remote.require("electron-updater");
 const path = require("path");
 const { download } = remote.require("electron-dl");
 const fs = remote.require("fs");
@@ -106,6 +107,16 @@ export function doDownloadUpgrade() {
   };
 }
 
+export function doAutoUpdate() {
+  return function(dispatch, getState) {
+    const state = getState();
+    dispatch({
+      type: types.OPEN_MODAL,
+      data: modals.AUTO_UPDATE_DOWNLOADED,
+    });
+  };
+}
+
 export function doCancelUpgrade() {
   return function(dispatch, getState) {
     const state = getState();
@@ -135,6 +146,12 @@ export function doCheckUpgradeAvailable() {
     dispatch({
       type: types.CHECK_UPGRADE_START,
     });
+
+    if (["win32", "darwin"].includes(process.platform)) {
+      // On Windows and Mac, updates happen silently
+      autoUpdater.checkForUpdates();
+      return;
+    }
 
     const success = ({ remoteVersion, upgradeAvailable }) => {
       dispatch({
