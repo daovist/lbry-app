@@ -422,9 +422,6 @@ app.on('before-quit', (event) => {
     shutdownDaemonAndQuit();
   } else {
     console.log('Quitting.')
-    if (autoUpdating) {
-      minimize = false;
-    }
   }
 });
 
