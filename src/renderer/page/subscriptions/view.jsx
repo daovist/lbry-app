@@ -2,7 +2,7 @@
 import React from "react";
 import SubHeader from "component/subHeader";
 import { BusyMessage } from "component/common.js";
-import { FeaturedCategory } from "page/discover/view";
+import CategoryList from "component/common/category-list";
 import type { Subscription } from "redux/reducers/subscriptions";
 
 type SavedSubscriptions = Array<Subscription>;
@@ -56,7 +56,9 @@ export default class extends React.PureComponent<Props> {
   render() {
     const { subscriptions, savedSubscriptions } = this.props;
 
-    const someClaimsNotLoaded = Boolean(subscriptions.find(subscription => !subscription.claims.length))
+    const someClaimsNotLoaded = Boolean(
+      subscriptions.find(subscription => !subscription.claims.length)
+    );
 
     const fetchingSubscriptions =
       !!savedSubscriptions.length &&
@@ -86,7 +88,7 @@ export default class extends React.PureComponent<Props> {
                 }
 
                 return (
-                  <FeaturedCategory
+                  <CategoryList
                     key={subscription.channelName}
                     categoryLink={subscription.uri}
                     category={subscription.channelName}
