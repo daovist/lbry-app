@@ -1,59 +1,65 @@
 import React from "react";
 import Icon from "component/icon";
+import classnames from "classnames";
 
 const Link = props => {
   const {
     href,
+    onClick: onClickProp,
     title,
-    style,
     label,
     icon,
     iconRight,
-    button,
     disabled,
     children,
     navigate,
     navigateParams,
     doNavigate,
     className,
+    link,
+    block,
+    alt,
+    circle,
+    flat,
   } = props;
 
-  const combinedClassName =
-    (className || "") +
-    (!className && !button ? "button-text" : "") + // Non-button links get the same look as text buttons
-    (button ? " button-block button-" + button + " button-set-item" : "") +
-    (disabled ? " disabled" : "");
+  const combinedClassName = classnames(
+    {
+      btn: !link,
+      "btn--alt": alt,
+      "btn--link": link,
+      "btn--disabled": disabled,
+      "btn--block": block,
+      "btn--circle": circle,
+      "btn--flat": flat,
+    },
+    className
+  );
 
   const onClick =
-    !props.onClick && navigate
+    !onClickProp && navigate
       ? () => {
           doNavigate(navigate, navigateParams || {});
         }
-      : props.onClick;
+      : onClickProp;
 
-  let content;
-  if (children) {
-    content = children;
-  } else {
-    content = (
-      <span {...("button" in props ? { className: "button__content" } : {})}>
-        {icon ? <Icon icon={icon} fixed={true} /> : null}
-        {label ? <span className="link-label">{label}</span> : null}
-        {iconRight ? <Icon icon={iconRight} fixed={true} /> : null}
-      </span>
-    );
-  }
+  const content = (
+    <span>
+      {icon && <Icon icon={icon} fixed={true} />}
+      {label && <span className="btn__label">{label}</span>}
+      {children && children}
+      {iconRight && <Icon icon={iconRight} fixed={true} />}
+    </span>
+  );
 
-  return (
-    <a
-      className={combinedClassName}
-      href={href || "javascript:;"}
-      title={title}
-      onClick={onClick}
-      {...("style" in props ? { style: style } : {})}
-    >
+  return href ? (
+    <a className={combinedClassName} href={href} title={title}>
       {content}
     </a>
+  ) : (
+    <button className={combinedClassName} onClick={onClick} disabled={disabled}>
+      {content}
+    </button>
   );
 };
 

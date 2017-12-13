@@ -56,12 +56,10 @@ class App extends React.PureComponent {
   render() {
     return (
       <div id="window">
-        <Theme />
         <Header />
-        <div id="main-content">
-          <Router />
-        </div>
+        <Router />
         <ModalRouter />
+        <Theme />
       </div>
     );
   }

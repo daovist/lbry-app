@@ -19,8 +19,10 @@ const contextMenu = remote.require("./main.js").contextMenu;
 const app = require("./app");
 
 // Workaround for https://github.com/electron-userland/electron-webpack/issues/52
-if (process.env.NODE_ENV !== 'development') {
-  window.staticResourcesPath = require("path").join(remote.app.getAppPath(), "../static").replace(/\\/g, "\\\\");
+if (process.env.NODE_ENV !== "development") {
+  window.staticResourcesPath = require("path")
+    .join(remote.app.getAppPath(), "../static")
+    .replace(/\\/g, "\\\\");
 } else {
   window.staticResourcesPath = "";
 }
@@ -105,12 +107,12 @@ var init = function() {
 
           ReactDOM.render(
             <Provider store={store}>
-              <div>
+              <React.Fragment>
                 <App />
                 <SnackBar />
-              </div>
+              </React.Fragment>
             </Provider>,
-            document.getElementById('app')
+            document.getElementById("app")
           );
         }
       );
@@ -124,7 +126,7 @@ var init = function() {
       <Provider store={store}>
         <SplashScreen onReadyToLaunch={onDaemonReady} />
       </Provider>,
-      document.getElementById('app')
+      document.getElementById("app")
     );
   }
 };

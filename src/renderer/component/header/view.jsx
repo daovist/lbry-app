@@ -15,86 +15,84 @@ export const Header = props => {
   } = props;
   return (
     <header id="header">
-      <div className="header__item">
+      <div className="header__actions-left">
         <Link
+          alt
+          circle
           onClick={back}
           disabled={isBackDisabled}
-          button="alt button--flat"
           icon="icon-arrow-left"
           title={__("Back")}
         />
-      </div>
-      <div className="header__item">
+
         <Link
+          alt
+          circle
           onClick={forward}
           disabled={isForwardDisabled}
-          button="alt button--flat"
           icon="icon-arrow-right"
           title={__("Forward")}
         />
-      </div>
-      <div className="header__item">
+
         <Link
+          alt
+          circle
           onClick={() => navigate("/discover")}
-          button="alt button--flat"
           icon="icon-home"
           title={__("Discover Content")}
         />
       </div>
-      <div className="header__item">
+
+      <WunderBar />
+
+      <div className="header__actions-right">
         <Link
-          onClick={() => navigate("/subscriptions")}
-          button="alt button--flat"
-          icon="icon-at"
-        />
-      </div>
-      <div className="header__item header__item--wunderbar">
-        <WunderBar />
-      </div>
-      <div className="header__item">
-        <Link
+          link
           onClick={() => navigate("/wallet")}
-          button="text"
-          className="no-underline"
-          icon="icon-bank"
-          label={balance}
+          icon="icon-user"
+          label={<span>You have {balance} LBC</span>}
           title={__("Wallet")}
         />
-      </div>
-      <div className="header__item">
         <Link
-          onClick={() => navigate("/publish")}
-          button="primary button--flat"
-          icon="icon-upload"
-          label={__("Publish")}
+          alt
+          onClick={() => navigate("/help")}
+          icon="question"
+          title={__("Help")}
         />
       </div>
-      <div className="header__item">
-        <Link
-          onClick={() => navigate("/downloaded")}
-          button="alt button--flat"
-          icon="icon-folder"
-          title={__("Downloads and Publishes")}
-        />
-      </div>
-      <div className="header__item">
-        <Link
-          onClick={() => navigate("/settings")}
-          button="alt button--flat"
-          icon="icon-gear"
-          title={__("Settings")}
-        />
-      </div>
-      {isUpgradeAvailable && (
-        <Link
-          onClick={() => downloadUpgrade()}
-          button="primary button--flat"
-          icon="icon-arrow-up"
-          label={__("Upgrade App")}
-        />
-      )}
     </header>
   );
 };
+
+// <div className="header__item">
+//
+// </div>
+// <div className="header__item">
+//   <Link
+//     onClick={() => navigate("/publish")}
+//     button="primary button--flat"
+//     icon="icon-upload"
+//     label={__("Publish")}
+//   />
+// </div>
+// <div className="header__item">
+//   <Link
+//     onClick={() => navigate("/downloaded")}
+//     button="alt button--flat"
+//     icon="icon-folder"
+//     title={__("Downloads and Publishes")}
+//   />
+// </div>
+// <div className="header__item">
+
+// </div>
+// {isUpgradeAvailable && (
+//   <Link
+//     onClick={() => downloadUpgrade()}
+//     button="primary button--flat"
+//     icon="icon-arrow-up"
+//     label={__("Upgrade App")}
+//   />
+// )}
 
 export default Header;

@@ -154,7 +154,8 @@ class WunderBar extends React.PureComponent {
     return (
       <div
         className={
-          "wunderbar" + (this.state.isActive ? " wunderbar--active" : "")
+          "header__wunderbar" +
+          (this.state.isActive ? " header__wunderbar--active" : "")
         }
       >
         {this.state.icon ? <Icon fixed icon={this.state.icon} /> : ""}
@@ -167,7 +168,7 @@ class WunderBar extends React.PureComponent {
           onChange={this.onChange}
           onKeyPress={this.onKeyPress}
           value={this.state.address}
-          placeholder={__("Find movies, music, games, and more")}
+          placeholder={__("Search for videos, movies, games, and more")}
         />
       </div>
     );
