@@ -89,25 +89,37 @@ class FileCard extends React.PureComponent {
             className="card__link"
           >
             <CardMedia title={title} thumbnail={thumbnail} />
-            <div className="card__title-identity">
+          </Link>
+          <div className="card__title-identity">
+            <Link
+              onClick={() => navigate("/show", { uri })}
+              className="card__link"
+            >
               <div className="card__title" title={title}>
                 <TruncatedText lines={1}>{title}</TruncatedText>
               </div>
-              <div className="card__subtitle">
-                <span className="card__indicators">
+            </Link>
+            <div className="card__subtitle">
+              <Link
+                onClick={() => navigate("/show", { uri })}
+                className="card__link"
+              >
+                <span className="card__indicators card--file-subtitle">
                   <FilePrice uri={uri} />{" "}
                   {isRewardContent && <Icon icon={icons.FEATURED} />}{" "}
                   {fileInfo && <Icon icon={icons.LOCAL} />}
                 </span>
-                <UriIndicator uri={uri} smallCard />
-              </div>
+              </Link>
+              <span className="card--file-subtitle">
+                <UriIndicator uri={uri} link={true} smallCard />
+              </span>
             </div>
-            {/* Test for nizuka's design: should we remove description?
+          </div>
+          {/* Test for nizuka's design: should we remove description?
             <div className="card__content card__subtext card__subtext--two-lines">
               <TruncatedMarkdown lines={2}>{description}</TruncatedMarkdown>
             </div>
             */}
-          </Link>
         </div>
         {obscureNsfw && this.state.hovered && <NsfwOverlay />}
       </section>
