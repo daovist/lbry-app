@@ -144,5 +144,5 @@ export const selectShowStack = createSelector(
   selectHistoryStack,
   stack => stack
     .filter(page => page.path.indexOf("/show") === 0)
-    .map(page => page.path)
+    .map(page => page.path.slice(10))
 );

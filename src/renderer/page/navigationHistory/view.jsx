@@ -1,7 +1,8 @@
 import React from 'react';
 import { BusyMessage } from 'component/common';
 import SubHeader from 'component/subHeader';
-// import TransactionList from 'component/transactionList';
+import FileTile from 'component/fileTile';
+import { normalizeURI } from 'lbryURI';
 
 class NavigationHistoryPage extends React.PureComponent {
 
@@ -11,8 +12,14 @@ class NavigationHistoryPage extends React.PureComponent {
     return (
       <main className="main--single-column">
         <SubHeader />
-        <section className="card">
-          {history.map(page => (<p>{page}</p>))}
+        <section className="section-spaced">
+          {history.length ? history.map(uri => (
+            <div key={uri}>
+              <FileTile uri={normalizeURI(uri)} />
+            </div>
+          )) : (
+            <p>No history saved.</p>
+          )}
         </section>
       </main>
     );
