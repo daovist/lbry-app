@@ -48,9 +48,11 @@ export const selectHeaderLinks = createSelector(selectCurrentPage, page => {
       };
     case 'settings':
     case 'help':
+    case 'history':
       return {
         settings: __('Settings'),
         help: __('Help'),
+        history: __('History')
       };
     case 'discover':
     case 'subscriptions':
