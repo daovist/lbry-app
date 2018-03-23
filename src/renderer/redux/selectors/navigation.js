@@ -139,3 +139,10 @@ export const selectActiveHistoryEntry = createSelector(
   selectState,
   state => state.stack[state.index]
 );
+
+export const selectShowStack = createSelector(
+  selectHistoryStack,
+  stack => stack
+    .filter(page => page.path.indexOf("/show") === 0)
+    .map(page => page.path)
+);

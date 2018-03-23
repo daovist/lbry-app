@@ -6,13 +6,13 @@ import SubHeader from 'component/subHeader';
 class NavigationHistoryPage extends React.PureComponent {
 
   render() {
-    // const { } = this.props;
+    const { history } = this.props;
 
     return (
       <main className="main--single-column">
         <SubHeader />
         <section className="card">
-          <p>history...</p>
+          {history.map(page => (<p>{page}</p>))}
         </section>
       </main>
     );
