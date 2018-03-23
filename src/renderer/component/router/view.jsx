@@ -35,7 +35,7 @@ const Router = props => {
     discover: <DiscoverPage params={params} />,
     downloaded: <FileListDownloaded params={params} />,
     help: <HelpPage params={params} />,
-    history: <TransactionHistoryPage params={params} />,
+    transactions: <TransactionHistoryPage params={params} />,
     invite: <InvitePage params={params} />,
     publish: <PublishPage params={params} />,
     published: <FileListPublished params={params} />,

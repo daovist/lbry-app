@@ -49,6 +49,7 @@ export const selectWunderBarIcon = createSelector(
       case 'published':
         return 'icon-folder';
       case 'history':
+      case 'transactions':
         return 'icon-history';
       case 'send':
         return 'icon-send';
