@@ -44,7 +44,7 @@ class App extends React.PureComponent {
     const { currentStackIndex: prevStackIndex } = prevProps;
     const { currentStackIndex, currentPageAttributes } = this.props;
 
-    if (currentStackIndex !== prevStackIndex) {
+    if (currentStackIndex !== prevStackIndex && currentPageAttributes) {
       this.mainContent.scrollTop = currentPageAttributes.scrollY || 0;
     }
   }
