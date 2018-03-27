@@ -94,7 +94,7 @@ const store = createStore(
 const compressor = createCompressor();
 const saveClaimsFilter = createFilter('claims', ['byId', 'claimsByUri']);
 const subscriptionsFilter = createFilter('subscriptions', ['subscriptions']);
-const navigationFilter = createFilter('navigation', ['stack']);
+const navigationFilter = createFilter('navigation');
 
 const persistOptions = {
   whitelist: ['claims', 'subscriptions', 'navigation'],
