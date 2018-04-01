@@ -29,7 +29,7 @@ class ModalConfirmThumbnailUpload extends React.PureComponent {
           <FormField
             type="checkbox"
             checked={nsfw}
-            onClick={this.setNsfw(event)}
+            onClick={this.setNsfw.bind(this)}
             label={__('NSFW')}
           />
         </section>
