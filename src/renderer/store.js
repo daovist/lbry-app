@@ -15,6 +15,7 @@ import shapeShiftReducer from 'redux/reducers/shape_shift';
 import subscriptionsReducer from 'redux/reducers/subscriptions';
 import mediaReducer from 'redux/reducers/media';
 import publishReducer from 'redux/reducers/publish';
+import thumbnailReducer from 'redux/reducers/thumbnail';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import createCompressor from 'redux-persist-transform-compress';
 import createFilter from 'redux-persist-transform-filter';
@@ -67,6 +68,7 @@ const reducers = combineReducers({
   subscriptions: subscriptionsReducer,
   media: mediaReducer,
   publish: publishReducer,
+  thumbnail: thumbnailReducer,
 });
 
 const bulkThunk = createBulkThunkMiddleware();
