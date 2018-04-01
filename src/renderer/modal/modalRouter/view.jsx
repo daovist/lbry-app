@@ -1,3 +1,4 @@
+import * as modals from 'constants/modal_types';
 import React from 'react';
 import ModalError from 'modal/modalError';
 import ModalAuthFailure from 'modal/modalAuthFailure';
@@ -17,10 +18,10 @@ import ModalRevokeClaim from 'modal/modalRevokeClaim';
 import ModalEmailCollection from 'modal/modalEmailCollection';
 import ModalPhoneCollection from 'modal/modalPhoneCollection';
 import ModalFirstSubscription from 'modal/modalFirstSubscription';
+import ModalConfirmThumbnailUpload from 'modal/modalConfirmThumbnailUpload';
 import ModalSendTip from '../modalSendTip';
 import ModalPublish from '../modalPublish';
 import ModalSearch from '../modalSearch';
-import * as modals from 'constants/modal_types';
 
 class ModalRouter extends React.PureComponent {
   constructor(props) {
@@ -41,7 +42,7 @@ class ModalRouter extends React.PureComponent {
   }
 
   showTransitionModals(props) {
-    const { modal, modalProps, openModal, page } = props;
+    const { modal, openModal, page } = props;
 
     if (modal) {
       return;
@@ -55,7 +56,7 @@ class ModalRouter extends React.PureComponent {
 
     if (
       transitionModal &&
-      (transitionModal != this.state.lastTransitionModal || page != this.state.lastTransitionPage)
+      (transitionModal !== this.state.lastTransitionModal || page !== this.state.lastTransitionPage)
     ) {
       openModal(transitionModal);
       this.setState({
@@ -141,6 +142,8 @@ class ModalRouter extends React.PureComponent {
         return <ModalEmailCollection {...modalProps} />;
       case modals.FIRST_SUBSCRIPTION:
         return <ModalFirstSubscription {...modalProps} />;
+      case modals.CONFIRM_THUMBNAIL_UPLOAD:
+        return <ModalConfirmThumbnailUpload {...modalProps} />;
       case modals.SEND_TIP:
         return <ModalSendTip {...modalProps} />;
       case modals.PUBLISH:
