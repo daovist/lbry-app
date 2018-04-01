@@ -338,3 +338,10 @@ p {
   color: var(--color-meta-light);
   font-style: italic;
 }
+
+a.link {
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
