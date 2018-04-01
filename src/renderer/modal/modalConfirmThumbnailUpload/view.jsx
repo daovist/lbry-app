@@ -3,17 +3,13 @@ import { Modal } from 'modal/modal';
 import FormField from 'component/formField/index';
 
 class ModalConfirmThumbnailUpload extends React.PureComponent {
-  setNsfw(event) {
-    this.props.setNsfw(event.target.checked);
-  }
-
   upload() {
     this.props.beginUpload(this.props.path, this.props.nsfw);
     this.props.closeModal();
   }
 
   render() {
-    const { closeModal, path, nsfw } = this.props;
+    const { closeModal, path, nsfw, setNsfw } = this.props;
 
     return (
       <Modal
@@ -29,7 +25,7 @@ class ModalConfirmThumbnailUpload extends React.PureComponent {
           <FormField
             type="checkbox"
             checked={nsfw}
-            onClick={this.setNsfw.bind(this)}
+            onClick={event => this.setNsfw(event.target.checked)}
             label={__('NSFW')}
           />
         </section>
