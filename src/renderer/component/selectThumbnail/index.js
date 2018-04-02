@@ -9,16 +9,16 @@ import {
 import SelectThumbnail from './view';
 
 const select = state => ({
-  api: selectThumbnailApi(state),
-  status: selectThumbnailStatus(state),
-  url: selectThumbnailUrl(state),
+  selectApi: selectThumbnailApi(state),
+  selectStatus: selectThumbnailStatus(state),
+  selectUrl: selectThumbnailUrl(state),
 });
 
 const perform = dispatch => ({
   openModal: (modal, props) => dispatch(doOpenModal(modal, props)),
   alertError: errorList => dispatch(doAlertError(errorList)),
   resetUpload: () => dispatch(resetThumbnailUpload()),
-  setStatus: () => dispatch(setThumbnailStatus()),
+  setStatus: status => dispatch(setThumbnailStatus(status)),
   setUrl: url => dispatch(setThumbnailUrl(url)),
 });
 
