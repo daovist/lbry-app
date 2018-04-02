@@ -162,6 +162,7 @@ reducers[ACTIONS.OPEN_MODAL] = (state, action) => {
   if (!state.modalsAllowed) {
     return state;
   }
+  console.log('ACTIONS.OPEN_MODAL', action.data);
   return Object.assign({}, state, {
     modal: action.data.modal,
     modalProps: action.data.modalProps || {},

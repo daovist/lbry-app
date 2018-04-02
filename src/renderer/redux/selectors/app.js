@@ -41,7 +41,10 @@ export const selectUpgradeFilename = createSelector(
   }
 );
 
-export const selectCurrentModal = createSelector(selectState, state => state.modal);
+export const selectCurrentModal = createSelector(selectState, state => {
+  console.log('selectCurrentModal', state.modal);
+  return state.modal;
+});
 
 export const selectDownloadProgress = createSelector(selectState, state => state.downloadProgress);
 

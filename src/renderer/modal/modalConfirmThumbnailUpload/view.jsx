@@ -4,7 +4,8 @@ import FormField from 'component/formField/index';
 
 class ModalConfirmThumbnailUpload extends React.PureComponent {
   upload() {
-    this.props.beginUpload(this.props.path, this.props.nsfw);
+    console.log('modal upload');
+    this.props.upload(this.props.path, this.props.nsfw);
     this.props.closeModal();
   }
 
@@ -21,14 +22,15 @@ class ModalConfirmThumbnailUpload extends React.PureComponent {
         onAborted={closeModal}
       >
         <p>{`Confirm upload: ${path}`}</p>
-        <section>
+
+        {/*<section>
           <FormField
             type="checkbox"
             checked={nsfw}
-            onClick={event => this.setNsfw(event.target.checked)}
+            onChange={event => console.log(event.target)}
             label={__('NSFW')}
-          />
-        </section>
+        />
+        </section>*/}
       </Modal>
     );
   }

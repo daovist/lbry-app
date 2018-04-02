@@ -15,7 +15,10 @@ const select = state => ({
 });
 
 const perform = dispatch => ({
-  openModal: (modal, props) => dispatch(doOpenModal(modal, props)),
+  openModal: (modal, props) => {
+    console.log('thumbnail container, modal/props:', modal, props);
+    return dispatch(doOpenModal(modal, props));
+  },
   alertError: errorList => dispatch(doAlertError(errorList)),
   resetUpload: () => dispatch(resetThumbnailUpload()),
   setStatus: status => dispatch(setThumbnailStatus(status)),

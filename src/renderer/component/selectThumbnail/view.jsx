@@ -23,6 +23,11 @@ class SelectThumbnail extends React.PureComponent<Props> {
     }
   }
 
+  handleUpload(path) {
+    console.log(path);
+    this.props.openModal(modals.CONFIRM_THUMBNAIL_UPLOAD, { path });
+  }
+
   render() {
     const {
       selectApi,
@@ -60,9 +65,10 @@ class SelectThumbnail extends React.PureComponent<Props> {
           <div className="card__content">
             <FileSelector
               fileLabel={__('Choose Thumbnail')}
-              onFileChosen={event =>
-                openModal(modals.CONFIRM_THUMBNAIL_UPLOAD, { path: event.target.value })
-              }
+              onFileChosen={filePath => {
+                console.log('this, filepath:', filePath);
+                this.handleUpload(filePath);
+              }}
             />
           </div>
         )}

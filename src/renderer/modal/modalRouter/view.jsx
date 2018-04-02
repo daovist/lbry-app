@@ -38,6 +38,7 @@ class ModalRouter extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log('ModalRouter componentWillReceiveProps', nextProps);
     this.showTransitionModals(nextProps);
   }
 
