@@ -23,14 +23,14 @@ class ModalConfirmThumbnailUpload extends React.PureComponent {
       >
         <p>{`Confirm upload: ${path}`}</p>
 
-        {/*<section>
+        {/* <section>
           <FormField
             type="checkbox"
             checked={nsfw}
             onChange={event => console.log(event.target)}
             label={__('NSFW')}
         />
-        </section>*/}
+        </section> */}
       </Modal>
     );
   }

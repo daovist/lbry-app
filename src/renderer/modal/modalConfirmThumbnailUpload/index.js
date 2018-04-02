@@ -4,6 +4,7 @@ import { uploadThumbnail, setThumbnailNsfw } from 'redux/actions/thumbnail';
 import ModalConfirmThumbnailUpload from './view';
 
 import { selectThumbnailNsfw } from 'redux/selectors/thumbnail';
+
 const select = state => ({
   nsfw: selectThumbnailNsfw(state),
 });
