@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-const selectState = state => state.upload || {};
+const selectState = state => state.thumbnail || {};
 
 export const selectThumbnailApi = createSelector(selectState, state => state.api);
 
