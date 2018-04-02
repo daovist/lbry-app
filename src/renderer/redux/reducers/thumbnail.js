@@ -47,7 +47,7 @@ type thumbnailManualUrl = {
 };
 
 type thumbnailNsfw = {
-  type: actions.THUMBNAIL_MANUAL_URL,
+  type: actions.THUMBNAIL_NSFW,
   data: {
     nsfw: boolean,
   },
