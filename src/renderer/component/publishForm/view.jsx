@@ -4,6 +4,7 @@ import { isNameValid, buildURI, regexInvalidURI } from 'lbryURI';
 import { Form, FormField, FormRow, FormFieldPrice, Submit } from 'component/common/form';
 import Button from 'component/button';
 import ChannelSection from 'component/selectChannel';
+import SelectThumbnail from 'component/selectThumbnail';
 import classnames from 'classnames';
 import type { PublishParams, UpdatePublishFormData } from 'redux/reducers/publish';
 import FileSelector from 'component/common/file-selector';
@@ -51,6 +52,7 @@ type Props = {
   resolveUri: string => void,
   scrollToTop: () => void,
   prepareEdit: ({}) => void,
+  resetThumbnail: () => void,
 };
 
 class PublishForm extends React.PureComponent<Props> {
@@ -66,6 +68,10 @@ class PublishForm extends React.PureComponent<Props> {
     (this: any).handleChannelChange = this.handleChannelChange.bind(this);
     (this: any).editExistingClaim = this.editExistingClaim.bind(this);
     (this: any).getNewUri = this.getNewUri.bind(this);
+  }
+
+  componentWillMount() {
+    this.props.resetThumbnail();
   }
 
   handlePublish() {
@@ -328,18 +334,7 @@ class PublishForm extends React.PureComponent<Props> {
                 onChange={e => updatePublishForm({ title: e.target.value })}
               />
             </FormRow>
-            <FormRow padded>
-              <FormField
-                stretch
-                type="text"
-                name="content_thumbnail"
-                label={__('Thumbnail')}
-                placeholder="http://spee.ch/mylogo"
-                value={thumbnail}
-                disabled={formDisabled}
-                onChange={e => updatePublishForm({ thumbnail: e.target.value })}
-              />
-            </FormRow>
+            <SelectThumbnail />
             <FormRow padded>
               <FormField
                 stretch
